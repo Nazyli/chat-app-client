@@ -5,6 +5,7 @@ import Signup from "./signup/Signup";
 import Profile from "./profile/Profile";
 import Chat from "./chat/Chat";
 import "./App.css";
+import ChatNew from "./chatNew/ChatNew";
 
 export const AppContext = React.createContext();
 const App = (props) => {
@@ -24,6 +25,7 @@ const App = (props) => {
             render={(props) => <Signup {...props} />}
           />
           <Route exact path="/chat" render={(props) => <Chat {...props} />} />
+          <Route exact path="/chatNew" render={(props) => <ChatNew {...props} />} />
         </Switch>
       </BrowserRouter>
     </div>
