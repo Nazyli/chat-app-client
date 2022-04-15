@@ -99,7 +99,7 @@ export function findChatMessageById(id) {
   }
 
   return request({
-    url: CHAT_SERVICE + "/rest/messages/findById" + id,
+    url: CHAT_SERVICE + "/rest/messages/findById/" + id,
     method: "GET",
   });
 }

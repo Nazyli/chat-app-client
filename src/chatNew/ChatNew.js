@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Moment from 'moment';
 import { message } from "antd";
 
 import {
@@ -111,6 +112,7 @@ const ChatNew = (props) => {
       const newMessages = [...messages];
       newMessages.push(message);
       setMessages(newMessages);
+      loadContacts();
     }
   };
 
@@ -179,19 +181,19 @@ const ChatNew = (props) => {
           <ConversationHeader.Content userName={currentUser.userName} info="Online" />
           <ConversationHeader.Actions>
             <AddUserButton />
-            <ArrowButton direction="right" onClick={logout}/>
+            <ArrowButton direction="right" onClick={logout} />
             {/* <InfoButton title="Show info" /> */}
           </ConversationHeader.Actions>
         </ConversationHeader>
         <ConversationList>
 
           {contacts.map((contact) => (
-            <Conversation onClick={() => { setActiveContact(contact); handleConversationClick() }} lastActivityTime="43 min" active={activeContact && contact.userId === activeContact.userId ? true : false}>
+            <Conversation onClick={() => { setActiveContact(contact); handleConversationClick() }} lastActivityTime={Moment(contact.receivedDate, Moment().ISO_8601).format("d MMM YY, HH:mm")} active={activeContact && contact.userId === activeContact.userId ? true : false}>
               <Avatar src={contact.pictureUrl} name={contact.userName} status="available" style={conversationAvatarStyle} />
               <Conversation.Content name={contact.userName} info=
                 {contact.totalNewMessages !== undefined && contact.totalNewMessages > 0 ?
                   contact.totalNewMessages + " new messages "
-                  : "Yes i can do it for you"} style={conversationContentStyle} />
+                  : contact.newMessage} style={conversationContentStyle} />
 
             </Conversation>
           ))}
