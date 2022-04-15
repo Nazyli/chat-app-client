@@ -103,11 +103,8 @@ const ChatNew = (props) => {
     if (msg.trim() !== "") {
       const message = {
         senderId: currentUser.userId,
-        senderName: currentUser.email,
         recipientId: activeContact.userId,
-        recipientName: activeContact.email,
-        content: msg,
-        timestamp: new Date(),
+        content: msg
       };
       stompClient.send("/app/chat", {}, JSON.stringify(message));
 
@@ -119,21 +116,19 @@ const ChatNew = (props) => {
 
   const loadContacts = () => {
     const promise = getUsers().then((users) =>
-      users.map((contact) =>
-        countNewMessages(contact.userId, currentUser.userId).then((count) => {
-          contact.totalNewMessages = count;
-          return contact;
-        })
+      users.map((contact) => countNewMessages(contact.userId, currentUser.userId).then((count) => {
+        contact.totalNewMessages = count;
+        return contact;
+      })
       )
     );
 
-    promise.then((promises) =>
-      Promise.all(promises).then((users) => {
-        setContacts(users);
-        if (activeContact === undefined && users.length > 0) {
-          setActiveContact(users[0]);
-        }
-      })
+    promise.then((promises) => Promise.all(promises).then((users) => {
+      setContacts(users);
+      if (activeContact === undefined && users.length > 0) {
+        setActiveContact(users[0]);
+      }
+    })
     );
   };
 
@@ -166,6 +161,12 @@ const ChatNew = (props) => {
       setChatContainerStyle({});
     }
   }, [sidebarVisible, setSidebarVisible, setConversationContentStyle, setConversationAvatarStyle, setSidebarStyle, setChatContainerStyle]);
+
+  const logout = () => {
+    localStorage.removeItem("accessToken");
+    props.history.push("/login");
+  };
+
   return <div style={{
     height: "600px",
     position: "relative"
@@ -178,7 +179,7 @@ const ChatNew = (props) => {
           <ConversationHeader.Content userName={currentUser.email} info="Active 10 mins ago" />
           <ConversationHeader.Actions>
             <AddUserButton />
-            <ArrowButton direction="right" />
+            <ArrowButton direction="right" onClick={logout}/>
             {/* <InfoButton title="Show info" /> */}
           </ConversationHeader.Actions>
         </ConversationHeader>

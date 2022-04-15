@@ -81,11 +81,8 @@ const Chat = (props) => {
     if (msg.trim() !== "") {
       const message = {
         senderId: currentUser.userId,
-        senderName: currentUser.email,
         recipientId: activeContact.userId,
-        recipientName: activeContact.email,
-        content: msg,
-        timestamp: new Date(),
+        content: msg
       };
       stompClient.send("/app/chat", {}, JSON.stringify(message));
 

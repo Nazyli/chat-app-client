@@ -33,7 +33,7 @@ const Profile = (props) => {
   };
 
   const tochat = () => {
-    props.history.push("/chat");
+    props.history.push("/chatNew");
   };
 
 
@@ -48,7 +48,7 @@ const Profile = (props) => {
       >
         <Meta
           avatar={<Avatar src={currentUser.pictureUrl} className="user-avatar-circle" />}
-          title={currentUser.username}
+          title={currentUser.userName}
           description={currentUser.email}
         />
       </Card>
