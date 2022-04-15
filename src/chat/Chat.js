@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Button, message } from "antd";
 import {
-  getUsers,
+  findAllConversation,
   countNewMessages,
-  findChatMessages,
-  findChatMessage,
+  findAllChatMessages,
+  findChatMessageById,
 } from "../util/ApiUtil";
 import { useRecoilValue, useRecoilState } from "recoil";
 import {
@@ -33,7 +33,7 @@ const Chat = (props) => {
 
   useEffect(() => {
     if (activeContact === undefined) return;
-    findChatMessages(activeContact.userId, currentUser.userId).then((msgs) =>
+    findAllChatMessages(activeContact.userId, currentUser.userId).then((msgs) =>
       setMessages(msgs)
     );
     loadContacts();
@@ -64,7 +64,7 @@ const Chat = (props) => {
     const notification = JSON.parse(msg.body);
     const active = JSON.parse(sessionStorage.getItem("recoil-persist")).chatActiveContact;
     if (active.userId === notification.senderId) {
-      findChatMessage(notification.id).then((message) => {
+      findChatMessageById(notification.id).then((message) => {
         const newMessages = JSON.parse(sessionStorage.getItem("recoil-persist"))
           .chatMessages;
         newMessages.push(message);
@@ -93,7 +93,7 @@ const Chat = (props) => {
   };
 
   const loadContacts = () => {
-    const promise = getUsers().then((users) =>
+    const promise = findAllConversation().then((users) =>
       users.map((contact) =>
         countNewMessages(contact.userId, currentUser.userId).then((count) => {
           contact.newMessages = count;
@@ -123,7 +123,7 @@ const Chat = (props) => {
               class="online"
               alt=""
             />
-            <p>{currentUser.email}</p>
+            <p>{currentUser.userName}</p>
             <div id="status-options">
               <ul>
                 <li id="status-online" class="active">
@@ -158,7 +158,7 @@ const Chat = (props) => {
                   <span class="contact-status online"></span>
                   <img id={contact.userId} src={contact.pictureUrl} alt="" />
                   <div class="meta">
-                    <p class="name">{contact.email}</p>
+                    <p class="name">{contact.userName}</p>
                     {contact.newMessages !== undefined &&
                       contact.newMessages > 0 && (
                         <p class="preview">
@@ -185,7 +185,7 @@ const Chat = (props) => {
       <div class="content">
         <div class="contact-profile">
           <img src={activeContact && activeContact.pictureUrl} alt="" />
-          <p>{activeContact && activeContact.email}</p>
+          <p>{activeContact && activeContact.userName}</p>
         </div>
         <ScrollToBottom className="messages">
           <ul>

@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { message } from "antd";
 
 import {
-  getUsers,
+  findAllConversation,
   countNewMessages,
-  findChatMessages,
-  findChatMessage,
+  findAllChatMessages,
+  findChatMessageById,
 } from "../util/ApiUtil";
 import { useRecoilValue, useRecoilState } from "recoil";
 import {
@@ -55,7 +55,7 @@ const ChatNew = (props) => {
   }, []);
   useEffect(() => {
     if (activeContact === undefined) return;
-    findChatMessages(activeContact.userId, currentUser.userId).then((msgs) =>
+    findAllChatMessages(activeContact.userId, currentUser.userId).then((msgs) =>
       setMessages(msgs)
     );
     loadContacts();
@@ -87,7 +87,7 @@ const ChatNew = (props) => {
     const notification = JSON.parse(msg.body);
     const active = JSON.parse(sessionStorage.getItem("recoil-persist")).chatActiveContact;
     if (active.userId === notification.senderId) {
-      findChatMessage(notification.id).then((message) => {
+      findChatMessageById(notification.id).then((message) => {
         const newMessages = JSON.parse(sessionStorage.getItem("recoil-persist"))
           .chatMessages;
         newMessages.push(message);
@@ -115,7 +115,7 @@ const ChatNew = (props) => {
   };
 
   const loadContacts = () => {
-    const promise = getUsers().then((users) =>
+    const promise = findAllConversation().then((users) =>
       users.map((contact) => countNewMessages(contact.userId, currentUser.userId).then((count) => {
         contact.totalNewMessages = count;
         return contact;
@@ -176,7 +176,7 @@ const ChatNew = (props) => {
         <ConversationHeader>
           <ConversationHeader />
           <Avatar src={currentUser.pictureUrl} name="Emily" />
-          <ConversationHeader.Content userName={currentUser.email} info="Active 10 mins ago" />
+          <ConversationHeader.Content userName={currentUser.userName} info="Online" />
           <ConversationHeader.Actions>
             <AddUserButton />
             <ArrowButton direction="right" onClick={logout}/>
@@ -187,8 +187,8 @@ const ChatNew = (props) => {
 
           {contacts.map((contact) => (
             <Conversation onClick={() => { setActiveContact(contact); handleConversationClick() }} lastActivityTime="43 min" active={activeContact && contact.userId === activeContact.userId ? true : false}>
-              <Avatar src={contact.pictureUrl} name={contact.email} status="available" style={conversationAvatarStyle} />
-              <Conversation.Content name={contact.email} info=
+              <Avatar src={contact.pictureUrl} name={contact.userName} status="available" style={conversationAvatarStyle} />
+              <Conversation.Content name={contact.userName} info=
                 {contact.totalNewMessages !== undefined && contact.totalNewMessages > 0 ?
                   contact.totalNewMessages + " new messages "
                   : "Yes i can do it for you"} style={conversationContentStyle} />
@@ -200,8 +200,8 @@ const ChatNew = (props) => {
       <ChatContainer style={chatContainerStyle}>
         <ConversationHeader>
           <ConversationHeader.Back onClick={handleBackClick} />
-          <Avatar src={activeContact && activeContact.pictureUrl} name={activeContact && activeContact.email} />
-          <ConversationHeader.Content userName={activeContact && activeContact.email} info="Active 10 mins ago" />
+          <Avatar src={activeContact && activeContact.pictureUrl} name={activeContact && activeContact.userName} />
+          <ConversationHeader.Content userName={activeContact && activeContact.userName} info="Active 10 mins ago" />
         </ConversationHeader>
         <MessageList>
           <MessageSeparator content="thursday, 15 July 2021" />

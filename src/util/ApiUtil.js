@@ -1,4 +1,6 @@
+import { browserHistory } from 'react-router';
 const CHAT_SERVICE = "http://192.168.1.78:8080";
+
 
 const request = (options) => {
   const headers = new Headers();
@@ -20,6 +22,9 @@ const request = (options) => {
   return fetch(options.url, options).then((response) =>
     response.json().then((json) => {
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("accessToken");
+        }
         return Promise.reject(json);
       }
       return json;
@@ -55,13 +60,13 @@ export function getCurrentUser() {
   });
 }
 
-export function getUsers() {
+export function findAllConversation() {
   if (!localStorage.getItem("accessToken")) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: CHAT_SERVICE + "/rest/users/summaries",
+    url: CHAT_SERVICE + "/rest/users/findAllConversation",
     method: "GET",
   });
 }
@@ -72,29 +77,29 @@ export function countNewMessages(senderId, recipientId) {
   }
 
   return request({
-    url: CHAT_SERVICE + "/rest/messages/" + senderId + "/" + recipientId + "/count",
+    url: CHAT_SERVICE + "/rest/messages/count?senderId=" + senderId + "&recipientId=" + recipientId,
     method: "GET",
   });
 }
 
-export function findChatMessages(senderId, recipientId) {
+export function findAllChatMessages(senderId, recipientId) {
   if (!localStorage.getItem("accessToken")) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: CHAT_SERVICE + "/rest/messages/" + senderId + "/" + recipientId,
+    url: CHAT_SERVICE + "/rest/messages/findAll?senderId=" + senderId + "&recipientId=" + recipientId,
     method: "GET",
   });
 }
 
-export function findChatMessage(id) {
+export function findChatMessageById(id) {
   if (!localStorage.getItem("accessToken")) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: CHAT_SERVICE + "/rest/messages/" + id,
+    url: CHAT_SERVICE + "/rest/messages/findById" + id,
     method: "GET",
   });
 }
